@@ -17,9 +17,9 @@
     <style name="Theme.MineSeeker.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="Theme.MineSeeker.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="Theme.MineSeeker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
