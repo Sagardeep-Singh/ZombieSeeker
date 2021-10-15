@@ -13,4 +13,6 @@
     <string name="play_game_button">Play Game!</string>
     <string name="options_button">Options</string>
     <string name="help_button">Help</string>
+    <string name="welcome_activity_skip_txt">Skip</string>
+    <string name="welcome_activity_message">Welcome\nto\nMine Seeker</string>
 </resources>
