@@ -2,33 +2,24 @@ package com.cmpt276.model;
 
 public class Tile {
 
-    private boolean isMine;
-    private int rowIndex;
-    private int colIndex;
-    private boolean isScanned;
+    private final boolean hasMine;
+    private boolean isClicked;
 
-    public Tile(){
-        this.isScanned = false;
+    public Tile(boolean hasMine) {
+        this.isClicked = false;
+        this.hasMine = hasMine;
     }
 
-    public boolean getIsMine() {
-        return isMine;
+    public boolean hasMine() {
+        return hasMine;
     }
 
-    public int getRowIndex() {
-        return rowIndex;
+    public boolean hasBeenClicked() {
+        return isClicked;
     }
 
-    public int getColIndex() {
-        return colIndex;
-    }
-
-    public boolean getIsScanned() {
-        return isScanned;
-    }
-
-    public void setIsScanned(){
-        this.isScanned = true;
+    public void markAsClicked() {
+        this.isClicked = true;
     }
 
 
