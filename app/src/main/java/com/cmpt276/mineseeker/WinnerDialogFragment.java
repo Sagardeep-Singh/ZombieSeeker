@@ -34,7 +34,7 @@ public class WinnerDialogFragment extends DialogFragment {
                 Locale.ENGLISH,
                 getString(R.string.winning_message),
                 this.scanCount));
-        
+
         DialogInterface.OnClickListener listener = (dialogInterface, which) -> {
             if (which == DialogInterface.BUTTON_NEUTRAL) {
                 Activity activity = getActivity();

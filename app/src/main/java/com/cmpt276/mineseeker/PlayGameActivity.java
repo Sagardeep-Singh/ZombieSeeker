@@ -11,6 +11,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.cmpt276.model.Game;
 import com.cmpt276.model.Tile;
@@ -85,14 +87,23 @@ public class PlayGameActivity extends AppCompatActivity {
 
             updateMineCountInRowColForScannedMines(tileButton);
 
+            if(this.game.getMineCount() == this.game.getRevealedMineCount()){
+                FragmentManager fm = this.getSupportFragmentManager();
+                DialogFragment fragment = new WinnerDialogFragment(this.game.getScannedMineCount());
+                fragment.show(fm,"Winner Dialog");
+            }
+
             return;
         }
+
         int count = this.game.getHiddenMineCountRowCol(tileButton.getRow(), tileButton.getCol());
-        tile.markAsScanned();
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
+
+        tile.markAsScanned();
+
     }
 
-    private void lockButtonSizes(){
+    private void lockButtonSizes() {
         for (int i = 0; i < NUM_ROWS; i++) {
             for (int j = 0; j < NUM_COLS; j++) {
                 TileButton btn = this.buttons[i][j];
@@ -139,9 +150,9 @@ public class PlayGameActivity extends AppCompatActivity {
         button.setText(String.format(Locale.ENGLISH, "%d", currentCount));
     }
 
-    private class TileButton extends androidx.appcompat.widget.AppCompatButton {
-        private int row;
-        private int col;
+    private static class TileButton extends androidx.appcompat.widget.AppCompatButton {
+        private final int row;
+        private final int col;
 
         TileButton(Context context, int row, int col) {
             super(context);
@@ -157,5 +168,4 @@ public class PlayGameActivity extends AppCompatActivity {
             return col;
         }
     }
-
 }
