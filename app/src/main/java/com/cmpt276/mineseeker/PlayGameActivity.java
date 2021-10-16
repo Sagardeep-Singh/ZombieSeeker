@@ -2,6 +2,10 @@ package com.cmpt276.mineseeker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -74,7 +78,9 @@ public class PlayGameActivity extends AppCompatActivity {
 
         if (tile.hasMine() && !tile.isMineRevealed()) {
 
-            tileButton.setBackgroundColor(getColor(R.color.purple_200));
+            lockButtonSizes();
+            setButtonBackground(tileButton);
+
             tile.markAsRevealed();
 
             updateMineCountInRowColForScannedMines(tileButton);
@@ -84,6 +90,30 @@ public class PlayGameActivity extends AppCompatActivity {
         int count = this.game.getHiddenMineCountRowCol(tileButton.getRow(), tileButton.getCol());
         tile.markAsScanned();
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
+    }
+
+    private void lockButtonSizes(){
+        for (int i = 0; i < NUM_ROWS; i++) {
+            for (int j = 0; j < NUM_COLS; j++) {
+                TileButton btn = this.buttons[i][j];
+                int height = btn.getHeight();
+                int width = btn.getWidth();
+
+                btn.setMaxHeight(height);
+                btn.setMinHeight(height);
+
+                btn.setMaxWidth(width);
+                btn.setMinWidth(width);
+            }
+
+        }
+    }
+
+    private void setButtonBackground(TileButton tileButton) {
+        Resources resources = getResources();
+        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.zombie);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, tileButton.getWidth(), tileButton.getHeight(), true);
+        tileButton.setBackground(new BitmapDrawable(resources, resizedBitmap));
     }
 
     private void updateMineCountInRowColForScannedMines(TileButton tileButton) {
