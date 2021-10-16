@@ -72,9 +72,41 @@ public class PlayGameActivity extends AppCompatActivity {
             return;
         }
 
+        if (tile.hasMine() && !tile.isMineRevealed()) {
+
+            tileButton.setBackgroundColor(getColor(R.color.purple_200));
+            tile.markAsRevealed();
+
+            updateMineCountInRowColForScannedMines(tileButton);
+
+            return;
+        }
         int count = this.game.getHiddenMineCountRowCol(tileButton.getRow(), tileButton.getCol());
         tile.markAsScanned();
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
+    }
+
+    private void updateMineCountInRowColForScannedMines(TileButton tileButton) {
+        for (int row = 0; row < this.game.getNumRows(); row++) {
+            Tile tile = this.game.getTile(row, tileButton.getCol());
+            if (tile.isScanned()) {
+                decreaseButtonMineCount(row, tileButton.getCol());
+            }
+        }
+
+        for (int col = 0; col < this.game.getNumCols(); col++) {
+            Tile tile = this.game.getTile(tileButton.getRow(), col);
+            if (tile.isScanned()) {
+                decreaseButtonMineCount(tileButton.getRow(), col);
+            }
+        }
+    }
+
+    private void decreaseButtonMineCount(int row, int col) {
+        TileButton button = this.buttons[row][col];
+        int currentCount = Integer.parseInt(button.getText().toString());
+        currentCount--;
+        button.setText(String.format(Locale.ENGLISH, "%d", currentCount));
     }
 
     private class TileButton extends androidx.appcompat.widget.AppCompatButton {
