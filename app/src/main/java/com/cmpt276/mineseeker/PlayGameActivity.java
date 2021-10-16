@@ -2,6 +2,10 @@ package com.cmpt276.mineseeker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -72,9 +76,67 @@ public class PlayGameActivity extends AppCompatActivity {
             return;
         }
 
+        if (tile.hasMine() && !tile.isMineRevealed()) {
+
+            lockButtonSizes();
+            setButtonBackground(tileButton);
+
+            tile.markAsRevealed();
+
+            updateMineCountInRowColForScannedMines(tileButton);
+
+            return;
+        }
         int count = this.game.getHiddenMineCountRowCol(tileButton.getRow(), tileButton.getCol());
         tile.markAsScanned();
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
+    }
+
+    private void lockButtonSizes(){
+        for (int i = 0; i < NUM_ROWS; i++) {
+            for (int j = 0; j < NUM_COLS; j++) {
+                TileButton btn = this.buttons[i][j];
+                int height = btn.getHeight();
+                int width = btn.getWidth();
+
+                btn.setMaxHeight(height);
+                btn.setMinHeight(height);
+
+                btn.setMaxWidth(width);
+                btn.setMinWidth(width);
+            }
+
+        }
+    }
+
+    private void setButtonBackground(TileButton tileButton) {
+        Resources resources = getResources();
+        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.zombie);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, tileButton.getWidth(), tileButton.getHeight(), true);
+        tileButton.setBackground(new BitmapDrawable(resources, resizedBitmap));
+    }
+
+    private void updateMineCountInRowColForScannedMines(TileButton tileButton) {
+        for (int row = 0; row < this.game.getNumRows(); row++) {
+            Tile tile = this.game.getTile(row, tileButton.getCol());
+            if (tile.isScanned()) {
+                decreaseButtonMineCount(row, tileButton.getCol());
+            }
+        }
+
+        for (int col = 0; col < this.game.getNumCols(); col++) {
+            Tile tile = this.game.getTile(tileButton.getRow(), col);
+            if (tile.isScanned()) {
+                decreaseButtonMineCount(tileButton.getRow(), col);
+            }
+        }
+    }
+
+    private void decreaseButtonMineCount(int row, int col) {
+        TileButton button = this.buttons[row][col];
+        int currentCount = Integer.parseInt(button.getText().toString());
+        currentCount--;
+        button.setText(String.format(Locale.ENGLISH, "%d", currentCount));
     }
 
     private class TileButton extends androidx.appcompat.widget.AppCompatButton {
