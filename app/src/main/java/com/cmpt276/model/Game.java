@@ -4,6 +4,14 @@ import java.util.ArrayList;
 
 public class Game {
 
+    public int getNumRows() {
+        return numRows;
+    }
+
+    public int getNumCols() {
+        return numCols;
+    }
+
     private final int numRows;
     private final int numCols;
     private final Tile[][] tiles;
@@ -17,7 +25,7 @@ public class Game {
 
     private ArrayList<Integer> getMineIndices(int numMines) {
         ArrayList<Integer> mineIndices = new ArrayList<>();
-        for (int i = 0; mineIndices.size() <= numMines; i++) {
+        for (int i = 0; mineIndices.size() < numMines; i++) {
             int index = (int) (Math.random() * (numRows * numCols));
             if (!mineIndices.contains(index)) {
                 mineIndices.add(index);
@@ -31,7 +39,7 @@ public class Game {
         ArrayList<Integer> mineIndices = getMineIndices(numMines);
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                this.tiles[i][j] = new Tile(mineIndices.contains((i + numCols) + j));
+                this.tiles[i][j] = new Tile(mineIndices.contains((i * numCols) + j));
             }
         }
     }
@@ -41,12 +49,12 @@ public class Game {
 
         for (int i = 0; i < numRows; i++) {
             Tile tile = this.tiles[i][col];
-            mineCount += !tile.hasBeenClicked() && tile.hasMine() ? 1 : 0;
+            mineCount += tile.hasMine() && !tile.isMineRevealed() ? 1 : 0;
         }
 
         for (int i = 0; i < numCols; i++) {
             Tile tile = this.tiles[row][i];
-            mineCount += !tile.hasBeenClicked() && tile.hasMine() ? 1 : 0;
+            mineCount += tile.hasMine() && !tile.isMineRevealed() ? 1 : 0;
         }
 
         return mineCount;
