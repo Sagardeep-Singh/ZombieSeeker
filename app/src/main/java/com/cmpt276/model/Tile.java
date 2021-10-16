@@ -3,10 +3,12 @@ package com.cmpt276.model;
 public class Tile {
 
     private final boolean hasMine;
-    private boolean isClicked;
+    private boolean isScanned;
+    private boolean isMineRevealed;
 
     public Tile(boolean hasMine) {
-        this.isClicked = false;
+        this.isScanned = false;
+        this.isMineRevealed = false;
         this.hasMine = hasMine;
     }
 
@@ -14,13 +16,19 @@ public class Tile {
         return hasMine;
     }
 
-    public boolean hasBeenClicked() {
-        return isClicked;
+    public boolean isScanned() {
+        return isScanned;
     }
 
-    public void markAsClicked() {
-        this.isClicked = true;
+    public boolean isMineRevealed() {
+        return isMineRevealed;
     }
 
+    public void markAsScanned() {
+        this.isScanned = true;
+    }
 
+    public void markAsRevealed() {
+        isMineRevealed = true;
+    }
 }
