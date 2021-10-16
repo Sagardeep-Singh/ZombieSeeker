@@ -37,19 +37,24 @@
         <activity
             android:name=".PlayGameActivity"
             android:parentActivityName=".MainActivity"
-            />
+            android:screenOrientation= "landscape"
+        />
         <activity
             android:name=".OptionsActivity"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation= "landscape"
             />
         <activity
             android:name=".HelpActivity"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation= "landscape"
             />
 
         <meta-data
             android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+            android:resource="@array/preloaded_fonts"
+            android:screenOrientation= "landscape"
+            />
     </application>
 
 </manifest>
