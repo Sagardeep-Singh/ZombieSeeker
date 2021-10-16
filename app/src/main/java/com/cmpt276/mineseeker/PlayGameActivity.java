@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -69,11 +68,13 @@ public class PlayGameActivity extends AppCompatActivity {
     private void handleButtonClick(TileButton tileButton) {
         Tile tile = this.game.getTile(tileButton.getRow(), tileButton.getCol());
 
-        Toast.makeText(this, String.format(Locale.ENGLISH,
-                "row %d col %d Mine %b",
-                tileButton.getRow(),
-                tileButton.getCol(),
-                tile.hasMine()), Toast.LENGTH_SHORT).show();
+        if (tile.isScanned()) {
+            return;
+        }
+
+        int count = this.game.getHiddenMineCountRowCol(tileButton.getRow(), tileButton.getCol());
+        tile.markAsScanned();
+        tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
     }
 
     private class TileButton extends androidx.appcompat.widget.AppCompatButton {
