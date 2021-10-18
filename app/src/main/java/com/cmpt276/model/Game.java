@@ -2,12 +2,14 @@ package com.cmpt276.model;
 
 import java.util.ArrayList;
 
-public class Game {
+public class Game implements Tile.TileScanObserver,Tile.MineRevealObserver {
 
     private final int numRows;
     private final int numCols;
     private final Tile[][] tiles;
     private final ArrayList<Integer> mineIndices;
+    private int scannedTiles = 0;
+    private int revealedMines = 0;
 
     public Game(int numRows, int numCols, int numMines) {
         this.numRows = numRows;
@@ -16,18 +18,21 @@ public class Game {
         this.mineIndices = new ArrayList<>();
 
         this.setupMineIndices(numMines);
-        this.setupTiles(numMines);
+        this.setupTiles();
     }
 
     public int getNumRows() {
+
         return numRows;
     }
 
     public int getNumCols() {
+
         return numCols;
     }
 
     private void setupMineIndices(int numMines) {
+
         for (int i = 0; this.mineIndices.size() < numMines; i++) {
             int index = (int) (Math.random() * (numRows * numCols));
             if (!this.mineIndices.contains(index)) {
@@ -36,10 +41,18 @@ public class Game {
         }
     }
 
-    private void setupTiles(int numMines) {
+    private void setupTiles() {
+
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                this.tiles[i][j] = new Tile(this.mineIndices.contains((i * numCols) + j));
+                boolean isMine = this.mineIndices.contains((i * numCols) + j);
+                Tile tile = new Tile(isMine);
+
+                tile.registerScanObserver(this);
+                if(isMine){
+                    tile.registerRevealObserver(this);
+                }
+                this.tiles[i][j] = tile;
             }
         }
     }
@@ -50,7 +63,8 @@ public class Game {
         for (int index : mineIndices) {
             int mineRow = index / this.numCols;
             int mineCol = index % this.numCols;
-            if ((mineRow == row || mineCol == col) && !this.tiles[mineRow][mineCol].isMineRevealed()) {
+            Tile tile = this.tiles[mineRow][mineCol];
+            if ((mineRow == row || mineCol == col) && tile.isMineHidden()) {
                 mineCount++;
             }
         }
@@ -59,40 +73,34 @@ public class Game {
     }
 
     public int getMineCount() {
+
         return this.mineIndices.size();
     }
 
     public int getRevealedMineCount() {
-        int mineCount = 0;
 
-        for (int index : mineIndices) {
-            int mineRow = index / this.numCols;
-            int mineCol = index % this.numCols;
-            if (this.tiles[mineRow][mineCol].isMineRevealed()) {
-                mineCount++;
-            }
-        }
-
-        return mineCount;
+        return revealedMines;
     }
 
-    public int getScannedMineCount() {
-        int mineCount = 0;
+    public int getScannedTileCount() {
 
-        for (Tile[] row : this.tiles) {
-            for (Tile tile : row) {
-                if(tile.isScanned()){
-                    mineCount++;
-                }
-            }
-        }
-
-        return mineCount;
+        return scannedTiles;
     }
 
     public Tile getTile(int row, int col) {
+
         return this.tiles[row][col];
     }
 
+    @Override
+    public void notifyTileScanned() {
 
+        this.scannedTiles++;
+    }
+
+    @Override
+    public void notifyMineRevealed() {
+
+        this.revealedMines++;
+    }
 }
