@@ -78,7 +78,7 @@ public class PlayGameActivity extends AppCompatActivity {
             return;
         }
 
-        if (tile.hasMine() && !tile.isMineRevealed()) {
+        if (tile.hasMine() && tile.isMineHidden()) {
 
             lockButtonSizes();
             setButtonBackground(tileButton);
@@ -89,7 +89,7 @@ public class PlayGameActivity extends AppCompatActivity {
 
             if(this.game.getMineCount() == this.game.getRevealedMineCount()){
                 FragmentManager fm = this.getSupportFragmentManager();
-                DialogFragment fragment = new WinnerDialogFragment(this.game.getScannedMineCount());
+                DialogFragment fragment = new WinnerDialogFragment(this.game.getScannedTileCount());
                 fragment.show(fm,"Winner Dialog");
             }
 
@@ -100,7 +100,6 @@ public class PlayGameActivity extends AppCompatActivity {
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
 
         tile.markAsScanned();
-
     }
 
     private void lockButtonSizes() {
