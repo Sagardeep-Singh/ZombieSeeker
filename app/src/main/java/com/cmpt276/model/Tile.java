@@ -8,8 +8,8 @@ public class Tile {
     private final boolean hasMine;
     private boolean isScanned;
     private boolean isMineRevealed;
-    private List<TileScanObserver> tileScanObservers = new ArrayList<>();
-    private List<MineRevealObserver> mineRevealObservers = new ArrayList<>();
+    private final List<TileScanObserver> tileScanObservers = new ArrayList<>();
+    private final List<MineRevealObserver> mineRevealObservers = new ArrayList<>();
 
     public Tile(boolean hasMine) {
         this.isScanned = false;
