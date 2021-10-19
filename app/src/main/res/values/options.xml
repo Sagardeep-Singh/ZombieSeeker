@@ -12,11 +12,16 @@
         <item>15</item>
     </integer-array>
 
+    <integer name="default_row">4</integer>
+    <integer name="default_col">6</integer>
+
     <integer-array name="num_mines_options">
         <item>6</item>
         <item>10</item>
         <item>15</item>
         <item>20</item>
     </integer-array>
+
+    <integer name="default_mines">6</integer>
 
 </resources>
