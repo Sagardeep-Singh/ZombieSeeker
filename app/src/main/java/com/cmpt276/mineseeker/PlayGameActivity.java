@@ -16,17 +16,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.cmpt276.model.Game;
+import com.cmpt276.model.Options;
 import com.cmpt276.model.Tile;
 
 import java.util.Locale;
 
 public class PlayGameActivity extends AppCompatActivity {
 
-    public static final int NUM_ROWS = 5;
-    public static final int NUM_COLS = 7;
-    public static final int NUM_MINES = 8;
     private TileButton[][] buttons;
     private Game game;
+    private Options options;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, PlayGameActivity.class);
@@ -36,6 +35,7 @@ public class PlayGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_game);
+        options = Options.getInstance();
 
         setupGame();
         updateUI();
@@ -65,11 +65,11 @@ public class PlayGameActivity extends AppCompatActivity {
     private void setupGame() {
 
         //Get the number of rows, columns and mines from options
-        this.game = new Game(NUM_ROWS, NUM_COLS, NUM_MINES);
-        this.buttons = new TileButton[NUM_ROWS][NUM_COLS];
+        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
+        this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
         TableLayout tblTiles = findViewById(R.id.tblTiles);
 
-        for (int row = 0; row < NUM_ROWS; row++) {
+        for (int row = 0; row < game.getNumRows(); row++) {
             TableRow tableRow = new TableRow(this);
             tableRow.setLayoutParams(new TableLayout.LayoutParams(
                     TableLayout.LayoutParams.MATCH_PARENT,
@@ -77,7 +77,7 @@ public class PlayGameActivity extends AppCompatActivity {
                     1.0f
             ));
 
-            for (int col = 0; col < NUM_COLS; col++) {
+            for (int col = 0; col < game.getNumCols(); col++) {
                 TileButton btn = new TileButton(this, row, col);
                 btn.setLayoutParams(new TableRow.LayoutParams(
                         TableLayout.LayoutParams.MATCH_PARENT,
@@ -129,8 +129,8 @@ public class PlayGameActivity extends AppCompatActivity {
     }
 
     private void lockButtonSizes() {
-        for (int i = 0; i < NUM_ROWS; i++) {
-            for (int j = 0; j < NUM_COLS; j++) {
+        for (int i = 0; i < game.getNumRows(); i++) {
+            for (int j = 0; j < game.getNumCols(); j++) {
                 TileButton btn = this.buttons[i][j];
                 int height = btn.getHeight();
                 int width = btn.getWidth();
