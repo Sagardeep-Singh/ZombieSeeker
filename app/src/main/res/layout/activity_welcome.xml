@@ -14,7 +14,7 @@
         android:fontFamily="@font/nosifer"
         android:text="@string/welcome_activity_message"
         android:textAlignment="center"
-        android:textColor="#5EBF62"
+        android:textColor="@color/green_text"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +44,7 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         android:text="@string/welcome_activity_skip_txt"
-        android:textColor="@color/white"
+        android:textColor="@color/green_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

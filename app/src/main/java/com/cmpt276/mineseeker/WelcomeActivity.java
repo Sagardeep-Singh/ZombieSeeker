@@ -46,7 +46,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 ObjectAnimator.ofArgb(
                         textView,
                         "textColor",
-                        getColor(R.color.design_default_color_error)
+                        getColor(R.color.green_text)
                 ).setDuration(DURATION));
 
         ImageView image = this.findViewById(R.id.imgZombie);

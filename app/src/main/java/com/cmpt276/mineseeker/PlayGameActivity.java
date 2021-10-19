@@ -85,6 +85,8 @@ public class PlayGameActivity extends AppCompatActivity {
                         1.0f));
                 btn.setBackgroundResource(R.drawable.grave);
                 btn.setTextColor(getColor(R.color.white));
+                btn.setTextSize(24);
+
                 btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
 
                 tableRow.addView(btn);
