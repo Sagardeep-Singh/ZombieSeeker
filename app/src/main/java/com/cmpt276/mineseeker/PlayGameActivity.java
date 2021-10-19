@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -37,6 +38,28 @@ public class PlayGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play_game);
 
         setupGame();
+        updateUI();
+    }
+
+    private void updateUI() {
+        TextView tvScanCount = this.findViewById(R.id.tvScanCount);
+
+        tvScanCount.setText(
+                String.format(
+                        getString(R.string.game_activity_scan_count),
+                        this.game.getScannedTileCount()
+                )
+        );
+
+        TextView tvMineCount = this.findViewById(R.id.tvMineCount);
+
+        tvMineCount.setText(
+                String.format(
+                        getString(R.string.game_activity_mine_count),
+                        this.game.getRevealedMineCount(),
+                        this.game.getMineCount()
+                )
+        );
     }
 
     private void setupGame() {
@@ -74,6 +97,7 @@ public class PlayGameActivity extends AppCompatActivity {
     private void handleButtonClick(TileButton tileButton) {
         Tile tile = this.game.getTile(tileButton.getRow(), tileButton.getCol());
 
+        String string = null;
         if (tile.isScanned()) {
             return;
         }
@@ -87,19 +111,21 @@ public class PlayGameActivity extends AppCompatActivity {
 
             updateMineCountInRowColForScannedMines(tileButton);
 
-            if(this.game.getMineCount() == this.game.getRevealedMineCount()){
+            if (this.game.getMineCount() == this.game.getRevealedMineCount()) {
                 FragmentManager fm = this.getSupportFragmentManager();
                 DialogFragment fragment = new WinnerDialogFragment(this.game.getScannedTileCount());
-                fragment.show(fm,"Winner Dialog");
+                fragment.show(fm, "Winner Dialog");
             }
 
+            updateUI();
             return;
         }
 
         int count = this.game.getHiddenMineCountRowCol(tileButton.getRow(), tileButton.getCol());
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
-
         tile.markAsScanned();
+        updateUI();
+
     }
 
     private void lockButtonSizes() {
