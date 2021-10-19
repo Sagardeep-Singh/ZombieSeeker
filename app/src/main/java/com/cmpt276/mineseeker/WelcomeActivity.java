@@ -49,6 +49,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+
                 startMainActivity();
             }
         };

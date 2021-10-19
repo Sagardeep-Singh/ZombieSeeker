@@ -1,5 +1,8 @@
 package com.cmpt276.mineseeker;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -19,9 +22,16 @@ import com.cmpt276.model.Game;
 import com.cmpt276.model.Options;
 import com.cmpt276.model.Tile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class PlayGameActivity extends AppCompatActivity {
+
+    public static final int BUTTON_ANIMATION_DURATION = 200;
+    public static final float BUTTON_ANIMATION_STRENGTH = 5f;
+    public static final String BUTTON_ANIMATION_PROPERTY = "TranslationY";
+    public static final long BUTTON_ANIMATION_DELAY_MULTIPLIER = 200L;
 
     private TileButton[][] buttons;
     private Game game;
@@ -39,6 +49,37 @@ public class PlayGameActivity extends AppCompatActivity {
 
         setupGame();
         updateUI();
+    }
+
+    private void setupGame() {
+
+        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
+        this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
+        TableLayout tblTiles = findViewById(R.id.tblTiles);
+
+        for (int row = 0; row < game.getNumRows(); row++) {
+            TableRow tableRow = new TableRow(this);
+            tableRow.setLayoutParams(new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.MATCH_PARENT,
+                    TableLayout.LayoutParams.MATCH_PARENT,
+                    1.0f
+            ));
+
+            for (int col = 0; col < game.getNumCols(); col++) {
+                TileButton btn = new TileButton(this, row, col);
+                btn.setLayoutParams(new TableRow.LayoutParams(
+                        TableLayout.LayoutParams.MATCH_PARENT,
+                        TableLayout.LayoutParams.MATCH_PARENT,
+                        1.0f));
+
+                btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
+                btn.setHapticFeedbackEnabled(true);
+
+                tableRow.addView(btn);
+                this.buttons[row][col] = btn;
+            }
+            tblTiles.addView(tableRow);
+        }
     }
 
     private void updateUI() {
@@ -62,38 +103,6 @@ public class PlayGameActivity extends AppCompatActivity {
         );
     }
 
-    private void setupGame() {
-
-        //Get the number of rows, columns and mines from options
-        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
-        this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
-        TableLayout tblTiles = findViewById(R.id.tblTiles);
-
-        for (int row = 0; row < game.getNumRows(); row++) {
-            TableRow tableRow = new TableRow(this);
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.MATCH_PARENT,
-                    TableLayout.LayoutParams.MATCH_PARENT,
-                    1.0f
-            ));
-
-            for (int col = 0; col < game.getNumCols(); col++) {
-                TileButton btn = new TileButton(this, row, col);
-                btn.setLayoutParams(new TableRow.LayoutParams(
-                        TableLayout.LayoutParams.MATCH_PARENT,
-                        TableLayout.LayoutParams.MATCH_PARENT,
-                        1.0f));
-
-                btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
-
-                tableRow.addView(btn);
-                this.buttons[row][col] = btn;
-            }
-            tblTiles.addView(tableRow);
-        }
-    }
-
-
     private void handleButtonClick(TileButton tileButton) {
         Tile tile = this.game.getTile(tileButton.getRow(), tileButton.getCol());
 
@@ -101,6 +110,8 @@ public class PlayGameActivity extends AppCompatActivity {
         if (tile.isScanned()) {
             return;
         }
+
+        animateRowColOnScan(tileButton.getRow(), tileButton.getCol());
 
         if (tile.hasMine() && tile.isMineHidden()) {
 
@@ -125,7 +136,44 @@ public class PlayGameActivity extends AppCompatActivity {
         tileButton.setText(String.format(Locale.ENGLISH, "%d", count));
         tile.markAsScanned();
         updateUI();
+    }
 
+    private void animateRowColOnScan(int rowIndex, int colIndex) {
+
+        for (int row = 0; row < this.game.getNumRows(); row++) {
+            if (row == rowIndex) {
+                continue;
+            }
+            TileButton button = this.buttons[row][colIndex];
+            animationButton(button, row);
+        }
+
+        for (int col = 0; col < this.game.getNumCols(); col++) {
+            if (col == colIndex) {
+                continue;
+            }
+            TileButton button = this.buttons[rowIndex][col];
+            animationButton(button, col);
+        }
+    }
+
+    private void updateMineCountInRowColForScannedMines(TileButton tileButton) {
+
+        for (int row = 0; row < this.game.getNumRows(); row++) {
+            Tile tile = this.game.getTile(row, tileButton.getCol());
+            TileButton button = this.buttons[row][tileButton.getCol()];
+            if (tile.isScanned()) {
+                decreaseButtonMineCount(button);
+            }
+        }
+
+        for (int col = 0; col < this.game.getNumCols(); col++) {
+            Tile tile = this.game.getTile(tileButton.getRow(), col);
+            TileButton button = this.buttons[tileButton.getRow()][col];
+            if (tile.isScanned()) {
+                decreaseButtonMineCount(button);
+            }
+        }
     }
 
     private void lockButtonSizes() {
@@ -152,24 +200,33 @@ public class PlayGameActivity extends AppCompatActivity {
         tileButton.setBackground(new BitmapDrawable(resources, resizedBitmap));
     }
 
-    private void updateMineCountInRowColForScannedMines(TileButton tileButton) {
-        for (int row = 0; row < this.game.getNumRows(); row++) {
-            Tile tile = this.game.getTile(row, tileButton.getCol());
-            if (tile.isScanned()) {
-                decreaseButtonMineCount(row, tileButton.getCol());
-            }
-        }
+    private void animationButton(TileButton button, int i) {
+        AnimatorSet set = new AnimatorSet();
+        List<Animator> animatorList = new ArrayList<>();
 
-        for (int col = 0; col < this.game.getNumCols(); col++) {
-            Tile tile = this.game.getTile(tileButton.getRow(), col);
-            if (tile.isScanned()) {
-                decreaseButtonMineCount(tileButton.getRow(), col);
-            }
-        }
+        animatorList.add(
+                ObjectAnimator.ofFloat(
+                        button,
+                        BUTTON_ANIMATION_PROPERTY,
+                        -BUTTON_ANIMATION_STRENGTH
+                ).setDuration(BUTTON_ANIMATION_DURATION)
+        );
+
+        animatorList.add(
+                ObjectAnimator.ofFloat(
+                        button,
+                        BUTTON_ANIMATION_PROPERTY,
+                        BUTTON_ANIMATION_STRENGTH
+                ).setDuration(BUTTON_ANIMATION_DURATION)
+        );
+
+        set.playSequentially(animatorList);
+        set.setStartDelay(i * BUTTON_ANIMATION_DELAY_MULTIPLIER);
+        set.start();
     }
 
-    private void decreaseButtonMineCount(int row, int col) {
-        TileButton button = this.buttons[row][col];
+    private void decreaseButtonMineCount(TileButton button) {
+
         int currentCount = Integer.parseInt(button.getText().toString());
         currentCount--;
         button.setText(String.format(Locale.ENGLISH, "%d", currentCount));
