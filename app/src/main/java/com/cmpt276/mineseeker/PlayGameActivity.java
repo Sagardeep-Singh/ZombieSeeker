@@ -83,7 +83,8 @@ public class PlayGameActivity extends AppCompatActivity {
                         TableLayout.LayoutParams.MATCH_PARENT,
                         TableLayout.LayoutParams.MATCH_PARENT,
                         1.0f));
-
+                btn.setBackgroundResource(R.drawable.grave);
+                btn.setTextColor(getColor(R.color.white));
                 btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
 
                 tableRow.addView(btn);
@@ -105,7 +106,7 @@ public class PlayGameActivity extends AppCompatActivity {
         if (tile.hasMine() && tile.isMineHidden()) {
 
             lockButtonSizes();
-            setButtonBackground(tileButton);
+            setButtonBackground(tileButton, R.drawable.zombie);
 
             tile.markAsRevealed();
 
@@ -145,9 +146,9 @@ public class PlayGameActivity extends AppCompatActivity {
         }
     }
 
-    private void setButtonBackground(TileButton tileButton) {
+    private void setButtonBackground(TileButton tileButton, int image) {
         Resources resources = getResources();
-        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.zombie);
+        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, image);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, tileButton.getWidth(), tileButton.getHeight(), true);
         tileButton.setBackground(new BitmapDrawable(resources, resizedBitmap));
     }
