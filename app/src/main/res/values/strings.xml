@@ -20,5 +20,8 @@
     <string name="settings">Settings</string>
     <string name="help_title">Help</string>
     <string name="mines"># Mines</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="times_played">Times Played:</string>
+    <string name="times_played_value">-</string>
     <string name="winning_message">Congratulations!!!\n You found all the zombies with %d scans</string>
 </resources>
