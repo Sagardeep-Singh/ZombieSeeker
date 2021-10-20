@@ -14,7 +14,6 @@ import com.cmpt276.model.Options;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;

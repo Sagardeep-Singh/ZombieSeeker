@@ -2,6 +2,9 @@ package com.cmpt276.model;
 
 import java.util.ArrayList;
 
+/**
+ * Class to represent zombie seeker game
+ */
 public class Game implements Tile.TileScanObserver, Tile.MineRevealObserver {
 
     private final int numRows;

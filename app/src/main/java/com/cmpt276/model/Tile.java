@@ -3,6 +3,9 @@ package com.cmpt276.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to hold information, such as is mine and is revealed, abouts tiles in the game.
+ */
 public class Tile {
 
     private final boolean hasMine;

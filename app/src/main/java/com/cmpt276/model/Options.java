@@ -3,6 +3,9 @@ package com.cmpt276.model;
 import java.util.HashMap;
 import java.util.Locale;
 
+/**
+ * Class to hold game wide options to be used by the game class and UI
+ */
 public class Options {
     public static final int DEFAULT_VALUE = 0;
 
