@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -26,9 +27,18 @@ public class PlayGameActivity extends AppCompatActivity {
     private TileButton[][] buttons;
     private Game game;
     private Options options;
+    public static final String CONTINUE_GAME_TAG = "CONTINUE GAME";
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, PlayGameActivity.class);
+    public static Intent getIntentForNewGame(Context context) {
+        Intent intent = new Intent(context, PlayGameActivity.class);
+        intent.putExtra(CONTINUE_GAME_TAG, false);
+        return intent;
+    }
+
+    public static Intent getIntentForIncompleteGame(Context context) {
+        Intent intent = new Intent(context, PlayGameActivity.class);
+        intent.putExtra(CONTINUE_GAME_TAG, true);
+        return intent;
     }
 
     @Override
@@ -39,6 +49,18 @@ public class PlayGameActivity extends AppCompatActivity {
 
         setupGame();
         updateUI();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupUpdateButtonTimer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        saveGameToPreferences();
     }
 
     private void updateUI() {
@@ -62,10 +84,29 @@ public class PlayGameActivity extends AppCompatActivity {
         );
     }
 
+    private void setupUpdateButtonTimer() {
+        CountDownTimer timer = new CountDownTimer(300, 300) {
+            @Override
+            public void onTick(long l) {
+            }
+            @Override
+            public void onFinish() {
+                showScannedTiles();
+            }
+        };
+        timer.start();
+    }
     private void setupGame() {
 
+        if(this.getIntent().getBooleanExtra(CONTINUE_GAME_TAG, false)){
+            String gameString = MainActivity.getGameString(this);
+            this.game = MainActivity.getGson().fromJson(gameString, Game.class);
+            this.game.registerObservers();
+        }else{
+            this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
+        }
+
         //Get the number of rows, columns and mines from options
-        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
         this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
         TableLayout tblTiles = findViewById(R.id.tblTiles);
 
@@ -93,6 +134,24 @@ public class PlayGameActivity extends AppCompatActivity {
                 this.buttons[row][col] = btn;
             }
             tblTiles.addView(tableRow);
+        }
+    }
+
+    private void showScannedTiles() {
+        for (int i = 0; i < game.getNumRows(); i++) {
+            for (int j = 0; j < game.getNumCols(); j++) {
+                Tile currentTile = this.game.getTile(i,j);
+                TileButton btn = this.buttons[i][j];
+                if(!currentTile.isMineHidden()){
+                    lockButtonSizes();
+                    setButtonBackground(btn);
+                    //Log.i("lmaoppoooooooooooooo", "loooooooooooooool");
+                }
+                if(currentTile.isScanned()){
+                    int count = this.game.getHiddenMineCountRowCol(i, j);
+                    btn.setText(String.format(Locale.ENGLISH, "%d", count));
+                }
+            }
         }
     }
 
@@ -195,5 +254,15 @@ public class PlayGameActivity extends AppCompatActivity {
         public int getCol() {
             return col;
         }
+    }
+
+    private void saveGameToPreferences() {
+        this.game.unRegisterObservers();
+        this.getSharedPreferences(MainActivity.SHARED_GAME_TAG, MODE_PRIVATE)
+                .edit()
+                .putString(
+                        MainActivity.GAME_TAG,
+                        MainActivity.getGson().toJson(this.game)
+                ).apply();
     }
 }
