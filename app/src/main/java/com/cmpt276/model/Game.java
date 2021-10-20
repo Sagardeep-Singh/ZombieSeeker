@@ -2,7 +2,7 @@ package com.cmpt276.model;
 
 import java.util.ArrayList;
 
-public class Game implements Tile.TileScanObserver,Tile.MineRevealObserver {
+public class Game implements Tile.TileScanObserver, Tile.MineRevealObserver {
 
     private final int numRows;
     private final int numCols;
@@ -16,7 +16,6 @@ public class Game implements Tile.TileScanObserver,Tile.MineRevealObserver {
         this.numCols = numCols;
         this.tiles = new Tile[numRows][numCols];
         this.mineIndices = new ArrayList<>();
-
         this.setupMineIndices(numMines);
         this.setupTiles();
     }
@@ -47,14 +46,11 @@ public class Game implements Tile.TileScanObserver,Tile.MineRevealObserver {
             for (int j = 0; j < numCols; j++) {
                 boolean isMine = this.mineIndices.contains((i * numCols) + j);
                 Tile tile = new Tile(isMine);
-
-                tile.registerScanObserver(this);
-                if(isMine){
-                    tile.registerRevealObserver(this);
-                }
                 this.tiles[i][j] = tile;
             }
         }
+
+        this.registerObservers();
     }
 
     public int getHiddenMineCountRowCol(int row, int col) {
@@ -102,5 +98,29 @@ public class Game implements Tile.TileScanObserver,Tile.MineRevealObserver {
     public void notifyMineRevealed() {
 
         this.revealedMines++;
+    }
+
+    public void registerObservers() {
+        for (Tile[] tileRow : tiles) {
+            for (Tile tile : tileRow) {
+                tile.registerScanObserver(this);
+
+                if(tile.hasMine()){
+                    tile.registerRevealObserver(this);
+                }
+            }
+        }
+    }
+
+    public void unRegisterObservers() {
+        for (Tile[] tileRow : tiles) {
+            for (Tile tile : tileRow) {
+                tile.unregisterScanObserver(this);
+
+                if(tile.hasMine()){
+                    tile.unregisterRevealObserver(this);
+                }
+            }
+        }
     }
 }
