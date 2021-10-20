@@ -9,9 +9,11 @@ public class Options {
     private final int DEFAULT_ROWS = 4;
     private final int DEFAULT_COLS = 6;
     private final int DEFAULT_MINES = 6;
-    private int numRows = DEFAULT_ROWS;
-    private int numCols = DEFAULT_COLS;
-    private int numMines = DEFAULT_MINES;
+
+    private int numRows;
+    private int numCols;
+    private int numMines;
+
 
     private static Options instance;
     private final HashMap<String, Integer> configMap = new HashMap<>();
@@ -23,31 +25,32 @@ public class Options {
         return instance;
     }
 
-    public Integer getConfigRunCount(){
-        String key = this.createKeyString();
-        return configMap.getOrDefault(key, DEFAULT_VALUE);
-    }
-
-    public void increaseConfigRunCount(){
-        String key = this.createKeyString();
-        configMap.put(key, getConfigRunCount() + 1);
-    }
-
-    public String createKeyString(){
-        return String.format(Locale.ENGLISH,"%d_%d_%d",this.getNumRows(),this.getNumCols(),this.getNumMines());
-    }
-
-    public void eraseTimesPlayed(){
-        configMap.remove(createKeyString());
-    }
-
-
     public static void setInstance(Options instance) {
         Options.instance = instance;
     }
 
+    private Options(){
+        numRows = DEFAULT_ROWS;
+        numCols = DEFAULT_COLS;
+        numMines = DEFAULT_MINES;
+    }
 
-    public Options(){
+    public Integer getCurrentConfigRunCount(){
+        String key = this.createCurrentKeyString();
+        return configMap.getOrDefault(key, DEFAULT_VALUE);
+    }
+
+    public void increaseCurrentConfigRunCount(){
+        String key = this.createCurrentKeyString();
+        configMap.put(key, getCurrentConfigRunCount() + 1);
+    }
+
+    public String createCurrentKeyString(){
+        return String.format(Locale.ENGLISH,"%d_%d_%d",this.getNumRows(),this.getNumCols(),this.getNumMines());
+    }
+
+    public void eraseCurrentTimesPlayed(){
+        configMap.remove(createCurrentKeyString());
     }
 
     public void setNumRows(int numRows){
