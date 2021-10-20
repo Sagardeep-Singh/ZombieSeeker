@@ -82,6 +82,16 @@ public class PlayGameActivity extends AppCompatActivity {
                         this.game.getMineCount()
                 )
         );
+        TextView tvGameCount = this.findViewById(R.id.tvGameCount);
+
+        tvGameCount.setText(
+                String.format(
+                        getString(R.string.game_count_text),
+                        this.options.getConfigRunCount()
+                )
+        );
+
+
     }
 
     private void setupUpdateButtonTimer() {
@@ -104,6 +114,8 @@ public class PlayGameActivity extends AppCompatActivity {
             this.game.registerObservers();
         }else{
             this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
+            options.increaseConfigRunCount();
+            OptionsActivity.saveOptionsToPreferences(this, options);
         }
 
         //Get the number of rows, columns and mines from options
