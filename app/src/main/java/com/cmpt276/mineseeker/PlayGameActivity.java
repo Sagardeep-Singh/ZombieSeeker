@@ -124,6 +124,9 @@ public class PlayGameActivity extends AppCompatActivity {
                         TableLayout.LayoutParams.MATCH_PARENT,
                         TableLayout.LayoutParams.MATCH_PARENT,
                         1.0f));
+                btn.setBackgroundResource(R.drawable.grave);
+                btn.setTextColor(getColor(R.color.white));
+                btn.setTextSize(24);
 
                 btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
 
@@ -141,8 +144,7 @@ public class PlayGameActivity extends AppCompatActivity {
                 TileButton btn = this.buttons[i][j];
                 if(!currentTile.isMineHidden()){
                     lockButtonSizes();
-                    setButtonBackground(btn);
-                    //Log.i("lmaoppoooooooooooooo", "loooooooooooooool");
+                    setButtonBackground(btn, R.drawable.zombie);
                 }
                 if(currentTile.isScanned()){
                     int count = this.game.getHiddenMineCountRowCol(i, j);
@@ -164,7 +166,7 @@ public class PlayGameActivity extends AppCompatActivity {
         if (tile.hasMine() && tile.isMineHidden()) {
 
             lockButtonSizes();
-            setButtonBackground(tileButton);
+            setButtonBackground(tileButton, R.drawable.zombie);
 
             tile.markAsRevealed();
 
@@ -204,9 +206,9 @@ public class PlayGameActivity extends AppCompatActivity {
         }
     }
 
-    private void setButtonBackground(TileButton tileButton) {
+    private void setButtonBackground(TileButton tileButton, int image) {
         Resources resources = getResources();
-        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.zombie);
+        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, image);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, tileButton.getWidth(), tileButton.getHeight(), true);
         tileButton.setBackground(new BitmapDrawable(resources, resizedBitmap));
     }
