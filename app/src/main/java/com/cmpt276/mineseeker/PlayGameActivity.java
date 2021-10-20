@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -138,7 +139,8 @@ public class PlayGameActivity extends AppCompatActivity {
                         1.0f));
                 btn.setBackgroundResource(R.drawable.grave);
                 btn.setTextColor(getColor(R.color.white));
-                btn.setTextSize(24);
+                btn.setTypeface(Typeface.DEFAULT_BOLD);
+                btn.setTextSize(30);
 
                 btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
 
