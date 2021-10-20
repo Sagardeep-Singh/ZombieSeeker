@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginBottom="24dp"
+        android:textSize="20sp"
         android:fontFamily="@font/nosifer"
         android:textColor="@color/design_default_color_primary"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,6 +45,7 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         android:text="@string/welcome_activity_skip_txt"
+        android:textSize="20sp"
         android:textColor="@color/green_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
