@@ -35,19 +35,20 @@ public class WinnerDialogFragment extends DialogFragment {
                 getString(R.string.winning_message),
                 this.scanCount));
 
-        DialogInterface.OnClickListener listener = (dialogInterface, which) -> {
-            if (which == DialogInterface.BUTTON_NEUTRAL) {
-                Activity activity = getActivity();
-
-                if(activity != null){
-                    activity.finish();
-                }
-            }
-        };
+        DialogInterface.OnClickListener clickListener = ((dialogInterface, which) ->
+            finishActivity());
 
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
-                .setNeutralButton("OK", listener)
+                .setNeutralButton("OK", clickListener)
                 .create();
+    }
+
+    private void finishActivity(){
+        Activity activity = getActivity();
+        if(activity != null){
+            OptionsActivity.deleteSavedGame(activity);
+            activity.finish();
+        }
     }
 }

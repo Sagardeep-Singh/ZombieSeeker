@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,14 +32,29 @@ public class OptionsActivity extends AppCompatActivity {
         createBoardDimensionRadioButtons();
         createNumMinesRadioButtons();
         handleSaveButton();
+        handleEraseTimesPlayedButton();
+    }
+
+    private void handleEraseTimesPlayedButton() {
+        Button eraseButton = findViewById(R.id.erase_button);
+        eraseButton.setOnClickListener(view -> {
+            options.eraseTimesPlayed();
+            OptionsActivity.deleteSavedGame(this);
+            Toast.makeText(this, "Cleared", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void handleSaveButton() {
         Button saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(view -> {
+            OptionsActivity.deleteSavedGame(this);
             updateOptions();
             finish();
         });
+    }
+
+    public static void deleteSavedGame(Context context){
+        context.getSharedPreferences(MainActivity.SHARED_GAME_TAG, MODE_PRIVATE).edit().clear().apply();
     }
 
 
@@ -50,7 +66,7 @@ public class OptionsActivity extends AppCompatActivity {
         options.setNumRows(db.getRow());
         options.setNumCols(db.getCol());
         options.setNumMines(Integer.parseInt(rb.getText().toString()));
-        saveOptionsToPreferences();
+        OptionsActivity.saveOptionsToPreferences(this, this.options);
     }
 
     private void createBoardDimensionRadioButtons() {
@@ -89,12 +105,12 @@ public class OptionsActivity extends AppCompatActivity {
 
     }
 
-    private void saveOptionsToPreferences() {
-        this.getSharedPreferences(MainActivity.SHARED_OPTIONS_TAG, MODE_PRIVATE)
+    public static void saveOptionsToPreferences(Context context, Options options) {
+        context.getSharedPreferences(MainActivity.SHARED_OPTIONS_TAG, MODE_PRIVATE)
                 .edit()
                 .putString(
                         MainActivity.OPTIONS_TAG,
-                        MainActivity.getGson().toJson(this.options)
+                        MainActivity.getGson().toJson(options)
                 ).apply();
     }
 
