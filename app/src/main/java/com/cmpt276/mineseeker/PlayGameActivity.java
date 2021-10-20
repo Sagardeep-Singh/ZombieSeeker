@@ -103,6 +103,7 @@ public class PlayGameActivity extends AppCompatActivity {
             }
             @Override
             public void onFinish() {
+
                 showScannedTiles();
             }
         };
@@ -118,7 +119,6 @@ public class PlayGameActivity extends AppCompatActivity {
             this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
         }
 
-        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
         this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
         TableLayout tblTiles = findViewById(R.id.tblTiles);
 
