@@ -36,22 +36,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setUpContinueGameButton();
+
         setUpPlayGameButton();
         setUpOptionsButton();
         setUpHelpButton();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpContinueGameButton();
 
     }
 
     private void setUpContinueGameButton() {
         String gameString = getGameString(this);
+        Button continueGameButton = findViewById(R.id.continue_game_button);
         if (gameString != null) {
-            Button continueGameButton = findViewById(R.id.continue_game_button);
             continueGameButton.setVisibility(View.VISIBLE);
             continueGameButton.setOnClickListener(view -> {
                 Intent i = PlayGameActivity.getIntentForIncompleteGame(MainActivity.this);
                 startActivity(i);
             });
+        }else{
+            continueGameButton.setVisibility(View.INVISIBLE);
         }
     }
 
