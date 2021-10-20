@@ -9,6 +9,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cmpt276.mineseeker.databinding.ActivityMainBinding;
+import com.cmpt276.model.Game;
 import com.cmpt276.model.Options;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,18 +18,12 @@ import com.google.gson.GsonBuilder;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    public static final String SHARED_OPTIONS_TAG = "SHARED OPTIONS";
-    public static final String SHARED_GAME_TAG = "SHARED GAME";
-    public static final String OPTIONS_TAG = "OPTIONS";
-    public static final String GAME_TAG = "GAME";
+
 
     public static Intent getIntent(Context context) {
         return new Intent(context, MainActivity.class);
     }
 
-    public static Gson getGson() {
-        return new GsonBuilder().create();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +31,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Options options = OptionsActivity.getSavedOptions(this);
+        if(options != null){
+            Options.setInstance(options);
+        }
 
         setUpPlayGameButton();
         setUpOptionsButton();
@@ -50,9 +50,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpContinueGameButton() {
-        String gameString = getGameString(this);
         Button continueGameButton = findViewById(R.id.continue_game_button);
-        if (gameString != null) {
+
+        Game game = OptionsActivity.getSavedGame(this);
+        if (game != null) {
             continueGameButton.setVisibility(View.VISIBLE);
             continueGameButton.setOnClickListener(view -> {
                 Intent i = PlayGameActivity.getIntentForIncompleteGame(MainActivity.this);
@@ -61,11 +62,6 @@ public class MainActivity extends AppCompatActivity {
         }else{
             continueGameButton.setVisibility(View.INVISIBLE);
         }
-    }
-
-    public static String getGameString(Context context) {
-        return context.getSharedPreferences(MainActivity.SHARED_GAME_TAG, MODE_PRIVATE)
-                .getString(MainActivity.GAME_TAG, null);
     }
 
     private void setUpPlayGameButton() {
@@ -78,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpOptionsButton(){
-        String optionsString = this.getSharedPreferences(MainActivity.SHARED_OPTIONS_TAG, MODE_PRIVATE)
-                .getString(MainActivity.OPTIONS_TAG, null);
-
-        if (optionsString != null) {
-            Options.setInstance(MainActivity.getGson().fromJson(optionsString, Options.class));
-        }
         Button optionsButton = findViewById(R.id.options_button);
         optionsButton.setOnClickListener(view -> {
             Intent i = OptionsActivity.getIntent(MainActivity.this);
@@ -97,8 +87,5 @@ public class MainActivity extends AppCompatActivity {
             Intent i = HelpActivity.getIntent(MainActivity.this);
             startActivity(i);
         });
-
     }
-
-
 }

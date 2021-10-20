@@ -28,6 +28,7 @@
         android:layout_marginTop="12dp"
         android:backgroundTint="#6051A53E"
         android:fontFamily="@font/atma_medium"
+        android:hapticFeedbackEnabled="true"
         android:paddingLeft="35dp"
         android:paddingTop="10dp"
         android:paddingRight="35dp"
@@ -53,7 +54,6 @@
         android:text="@string/options_button"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/play_game_button"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/play_game_button"
         app:layout_constraintTop_toBottomOf="@+id/play_game_button" />
 
@@ -71,7 +71,6 @@
         android:text="@string/help_button"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/play_game_button"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/options_button"
         app:layout_constraintTop_toBottomOf="@+id/options_button"
         tools:ignore="UnknownId" />
