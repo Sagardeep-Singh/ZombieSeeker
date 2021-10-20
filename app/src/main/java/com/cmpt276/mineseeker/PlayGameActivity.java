@@ -144,8 +144,7 @@ public class PlayGameActivity extends AppCompatActivity {
                 TileButton btn = this.buttons[i][j];
                 if(!currentTile.isMineHidden()){
                     lockButtonSizes();
-                    setButtonBackground(btn);
-                    //Log.i("lmaoppoooooooooooooo", "loooooooooooooool");
+                    setButtonBackground(btn, R.drawable.zombie);
                 }
                 if(currentTile.isScanned()){
                     int count = this.game.getHiddenMineCountRowCol(i, j);
