@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,9 +39,18 @@ public class PlayGameActivity extends AppCompatActivity {
     private Game game;
     private Options options;
     private AnimatorSet buttonAnimatorSet = new AnimatorSet();
+    public static final String CONTINUE_GAME_TAG = "CONTINUE GAME";
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, PlayGameActivity.class);
+    public static Intent getIntentForNewGame(Context context) {
+        Intent intent = new Intent(context, PlayGameActivity.class);
+        intent.putExtra(CONTINUE_GAME_TAG, false);
+        return intent;
+    }
+
+    public static Intent getIntentForIncompleteGame(Context context) {
+        Intent intent = new Intent(context, PlayGameActivity.class);
+        intent.putExtra(CONTINUE_GAME_TAG, true);
+        return intent;
     }
 
     @Override
@@ -53,35 +63,16 @@ public class PlayGameActivity extends AppCompatActivity {
         updateUI();
     }
 
-    private void setupGame() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupUpdateButtonTimer();
+    }
 
-        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
-        this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
-        TableLayout tblTiles = findViewById(R.id.tblTiles);
-
-        for (int row = 0; row < game.getNumRows(); row++) {
-            TableRow tableRow = new TableRow(this);
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.MATCH_PARENT,
-                    TableLayout.LayoutParams.MATCH_PARENT,
-                    1.0f
-            ));
-
-            for (int col = 0; col < game.getNumCols(); col++) {
-                TileButton btn = new TileButton(this, row, col);
-                btn.setLayoutParams(new TableRow.LayoutParams(
-                        TableLayout.LayoutParams.MATCH_PARENT,
-                        TableLayout.LayoutParams.MATCH_PARENT,
-                        1.0f));
-
-                btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
-                btn.setHapticFeedbackEnabled(true);
-
-                tableRow.addView(btn);
-                this.buttons[row][col] = btn;
-            }
-            tblTiles.addView(tableRow);
-        }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        saveGameToPreferences();
     }
 
     private void updateUI() {
@@ -105,6 +96,78 @@ public class PlayGameActivity extends AppCompatActivity {
         );
     }
 
+    private void setupUpdateButtonTimer() {
+        CountDownTimer timer = new CountDownTimer(300, 300) {
+            @Override
+            public void onTick(long l) {
+            }
+            @Override
+            public void onFinish() {
+                showScannedTiles();
+            }
+        };
+        timer.start();
+    }
+    private void setupGame() {
+
+        if(this.getIntent().getBooleanExtra(CONTINUE_GAME_TAG, false)){
+            String gameString = MainActivity.getGameString(this);
+            this.game = MainActivity.getGson().fromJson(gameString, Game.class);
+            this.game.registerObservers();
+        }else{
+            this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
+        }
+
+        this.game = new Game(options.getNumRows(), options.getNumCols(), options.getNumMines());
+        this.buttons = new TileButton[game.getNumRows()][game.getNumCols()];
+        TableLayout tblTiles = findViewById(R.id.tblTiles);
+
+        for (int row = 0; row < game.getNumRows(); row++) {
+            TableRow tableRow = new TableRow(this);
+            tableRow.setLayoutParams(new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.MATCH_PARENT,
+                    TableLayout.LayoutParams.MATCH_PARENT,
+                    1.0f
+            ));
+
+            for (int col = 0; col < game.getNumCols(); col++) {
+                TileButton btn = new TileButton(this, row, col);
+                btn.setLayoutParams(new TableRow.LayoutParams(
+                        TableLayout.LayoutParams.MATCH_PARENT,
+                        TableLayout.LayoutParams.MATCH_PARENT,
+                        1.0f));
+                btn.setBackgroundResource(R.drawable.grave);
+                btn.setTextColor(getColor(R.color.white));
+                btn.setTextSize(24);
+
+                btn.setOnClickListener(view -> handleButtonClick((TileButton) view));
+                btn.setHapticFeedbackEnabled(true);
+
+                tableRow.addView(btn);
+                this.buttons[row][col] = btn;
+            }
+            tblTiles.addView(tableRow);
+        }
+    }
+
+    private void showScannedTiles() {
+        for (int i = 0; i < game.getNumRows(); i++) {
+            for (int j = 0; j < game.getNumCols(); j++) {
+                Tile currentTile = this.game.getTile(i,j);
+                TileButton btn = this.buttons[i][j];
+                if(!currentTile.isMineHidden()){
+                    lockButtonSizes();
+                    setButtonBackground(btn, R.drawable.zombie);
+                }
+                if(currentTile.isScanned()){
+                    int count = this.game.getHiddenMineCountRowCol(i, j);
+                    btn.setText(String.format(Locale.ENGLISH, "%d", count));
+                }
+            }
+        }
+    }
+
+
     private void handleButtonClick(TileButton tileButton) {
         Tile tile = this.game.getTile(tileButton.getRow(), tileButton.getCol());
 
@@ -118,7 +181,7 @@ public class PlayGameActivity extends AppCompatActivity {
         if (tile.hasMine() && tile.isMineHidden()) {
 
             lockButtonSizes();
-            setButtonBackground(tileButton);
+            setButtonBackground(tileButton, R.drawable.zombie);
 
             tile.markAsRevealed();
 
@@ -208,9 +271,9 @@ public class PlayGameActivity extends AppCompatActivity {
         }
     }
 
-    private void setButtonBackground(TileButton tileButton) {
+    private void setButtonBackground(TileButton tileButton, int image) {
         Resources resources = getResources();
-        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.zombie);
+        Bitmap originalBitmap = BitmapFactory.decodeResource(resources, image);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, tileButton.getWidth(), tileButton.getHeight(), true);
         tileButton.setBackground(new BitmapDrawable(resources, resizedBitmap));
     }
@@ -243,8 +306,7 @@ public class PlayGameActivity extends AppCompatActivity {
     }
 
     private void decreaseButtonMineCount(TileButton button) {
-
-        int currentCount = Integer.parseInt(button.getText().toString());
+       int currentCount = Integer.parseInt(button.getText().toString());
         currentCount--;
         button.setText(String.format(Locale.ENGLISH, "%d", currentCount));
     }
@@ -266,5 +328,15 @@ public class PlayGameActivity extends AppCompatActivity {
         public int getCol() {
             return col;
         }
+    }
+
+    private void saveGameToPreferences() {
+        this.game.unRegisterObservers();
+        this.getSharedPreferences(MainActivity.SHARED_GAME_TAG, MODE_PRIVATE)
+                .edit()
+                .putString(
+                        MainActivity.GAME_TAG,
+                        MainActivity.getGson().toJson(this.game)
+                ).apply();
     }
 }

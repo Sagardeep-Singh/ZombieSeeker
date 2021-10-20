@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/zombie_background"
     tools:context=".WelcomeActivity">
 
     <TextView
         android:id="@+id/tvWelcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/nosifer"
         android:text="@string/welcome_activity_message"
         android:textAlignment="center"
-        android:textSize="48sp"
+        android:textColor="@color/green_text"
+        android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.566"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginBottom="24dp"
+        android:fontFamily="@font/nosifer"
+        android:textColor="@color/design_default_color_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -36,8 +40,31 @@
         android:layout_marginBottom="24dp"
         android:background="@color/transparent"
         android:drawableEnd="@drawable/ic_baseline_chevron_right_24"
+        android:fontFamily="@font/nosifer"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:text="@string/welcome_activity_skip_txt"
-        android:textColor="@color/design_default_color_primary"
+        android:textColor="@color/green_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgZombie"
+        android:layout_width="74dp"
+        android:layout_height="127dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvCounter"
+        app:srcCompat="@drawable/welcome_zombie" />
+
+    <TextView
+        android:id="@+id/tvAuthors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/nosifer"
+        android:text="@string/authors"
+        android:textColor="@android:color/primary_text_dark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

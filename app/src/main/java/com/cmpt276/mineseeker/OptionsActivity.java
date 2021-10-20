@@ -90,7 +90,7 @@ public class OptionsActivity extends AppCompatActivity {
     }
 
     private void saveOptionsToPreferences() {
-        this.getSharedPreferences(MainActivity.SHARED_PREFERENCES_TAG, MODE_PRIVATE)
+        this.getSharedPreferences(MainActivity.SHARED_OPTIONS_TAG, MODE_PRIVATE)
                 .edit()
                 .putString(
                         MainActivity.OPTIONS_TAG,
